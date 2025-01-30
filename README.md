@@ -1,63 +1,73 @@
-# Agent ia Pong
+Agent IA Pong
 
-## Introduction
+Introduction
 
-Agent ia Pong est un projet visant à développer une intelligence artificielle capable de jouer au jeu classique Pong en utilisant des techniques d'apprentissage par renforcement. L'agent est entraîné à l'aide d'un réseau de neurones profond (DQN) pour apprendre des stratégies efficaces en interagissant avec l'environnement de jeu.
+Agent IA Pong est un projet visant à développer une intelligence artificielle capable de jouer au jeu classique Pong en utilisant des techniques d'apprentissage par renforcement. L'agent est entraîné à l'aide d'un réseau de neurones profond (DQN) pour apprendre des stratégies efficaces en interagissant avec l'environnement de jeu.
 
-## Fonctionnalités
+Fonctionnalités
 
-- **Environnement de Jeu Personnalisé** : Développé avec Pygame pour une simulation réaliste de Pong.
-- **Agent Intelligent** : Utilise Deep Q-Learning pour prendre des décisions basées sur l'état actuel du jeu.
-- **Entraînement Parallèle** : Supporte l'entraînement simultané de plusieurs environnements pour accélérer le processus d'apprentissage.
-- **Interface Joueur vs Agent** : Permet aux utilisateurs de jouer contre l'agent entraîné.
-- **Visualisation avec TensorBoard** : Suivi des métriques d'entraînement en temps réel.
+Environnement de Jeu Personnalisé : Simulation de Pong développée avec Pygame.
 
-## Installation
+Agent Intelligent : Utilisation du Deep Q-Learning pour une prise de décision adaptée.
 
-### Prérequis
+Entraînement Accéléré : Support de l'entraînement parallèle pour une optimisation rapide.
 
-- Python 3.7 ou supérieur
-- pip
+Mode Joueur vs Agent : Possibilité de jouer contre l'agent entraîné.
 
-### Installation des Dépendances
+Visualisation des Performances : Suivi des métriques d'entraînement avec TensorBoard.
 
-Clonez le dépôt et installez les dépendances requises :
+Installation
 
+Prérequis
 
-git clone https://github.com/votre-utilisateur/agent-ia-pong.git
+Python 3.7 ou version supérieure
+
+pip (installateur de paquets Python)
+
+Installation des Dépendances
+
+Clonez le dépôt et installez les bibliothèques requises :
+
+git clone https://github.com/crd78/agent-ia-pong.git
 cd agent-ia-pong
 pip install -r requirements.txt
 
 Configuration
+
 Assurez-vous que les répertoires pour les modèles et les logs existent :
 
-mkdir models
-mkdir runs
-
-Configuration
-Assurez-vous que les répertoires pour les modèles et les logs existent :
-
-mkdir models
-mkdir runs
+mkdir -p models runs
 
 Utilisation
+
 Entraînement de l'Agent
+
 Pour entraîner l'agent, exécutez le script train.py :
 
 python train.py
-Les modèles entraînés seront sauvegardés dans le répertoire models, et les journaux d'entraînement seront disponibles dans runs.
+
+Les modèles entraînés seront sauvegardés dans le répertoire models.
+
+Les journaux d'entraînement seront enregistrés dans runs.
 
 Jouer contre l'Agent
-Assurez-vous d'avoir un modèle entraîné dans pong_agent_best.pth. Lancez le jeu en exécutant main.py :
 
-Contrôles :
+Assurez-vous d'avoir un modèle entraîné (pong_agent_best.pth) et lancez le jeu en exécutant main.py :
+
+python main.py
+
+Contrôles
 
 Flèche Haut : Déplacer la raquette vers le haut
+
 Flèche Bas : Déplacer la raquette vers le bas
+
 Échap : Quitter le jeu
+
 Visualisation des Performances
-Utilisez TensorBoard pour visualiser les métriques d'entraînement :
+
+Utilisez TensorBoard pour suivre l'évolution de l'entraînement :
 
 tensorboard --logdir=runs
 
-Ouvrez votre navigateur et allez à l'adresse indiquée pour voir les graphiques des récompenses, des pertes, etc.
+Ensuite, ouvrez votre navigateur à l'adresse indiquée pour visualiser les graphiques des récompenses, pertes, etc.
