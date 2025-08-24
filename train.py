@@ -6,9 +6,16 @@ import os
 from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
 from collections import deque
-import torch
+import argparse
+import time
 
 print("CUDA disponible :", torch.cuda.is_available())
+
+# Arguments pour activer le rendu
+parser = argparse.ArgumentParser()
+parser.add_argument("--render", action="store_true", help="Afficher la partie pendant l'entraînement")
+args = parser.parse_args()
+VISUALIZE = args.render
 
 # Training parameters
 EPISODES = 1250
@@ -16,17 +23,19 @@ SAVE_INTERVAL = 100
 MODEL_DIR = "models"
 LOG_DIR = "runs"
 MOVING_AVG_WINDOW = 100
-NUM_ENVIRONMENTS = 8  # Nombre d'environnements parallèles
+
+# Un seul environnement si on veut le rendu, sinon 8
+NUM_ENVIRONMENTS = 1 if VISUALIZE else 8
 
 if not os.path.exists(MODEL_DIR):
     os.makedirs(MODEL_DIR)
 
-# Initialize multiple environments in training mode
-envs = [PongEnv(training_mode=True) for _ in range(NUM_ENVIRONMENTS)]
+# Si on veut le rendu, on désactive le mode training pour permettre l'affichage
+envs = [PongEnv(training_mode=not VISUALIZE) for _ in range(NUM_ENVIRONMENTS)]
 state_shape = (4, 5)  # Doit correspondre à l'environnement
 n_actions = 3
 agent = PongAgent(state_shape, n_actions)
-writer = SummaryWriter(LOG_DIR)
+writer = SummaryWriter(LOG_DIR) if not VISUALIZE else None
 
 # Metrics tracking
 best_score = float('-inf')
@@ -34,7 +43,7 @@ steps_done = 0
 episode_rewards = deque(maxlen=MOVING_AVG_WINDOW)
 
 try:
-    for episode in tqdm(range(EPISODES), desc="Training"):
+    for episode in tqdm(range(EPISODES), desc="Training", disable=VISUALIZE):
         states = [env.reset() for env in envs]
         state_stacks = [np.array([state for _ in range(4)]) for state in states]
         episode_reward = 0
@@ -52,6 +61,11 @@ try:
                 action = agent.select_action(state_tensor)
                 
                 next_state, reward, done = env.step(action)
+
+                # Affichage du jeu si demandé (seulement pour le premier env)
+                if VISUALIZE and i == 0:
+                    env.render()
+                    time.sleep(0.01)
                 
                 # Traquer les Q-values
                 with torch.no_grad():
@@ -73,13 +87,14 @@ try:
         episode_rewards.append(episode_reward)
         moving_avg_reward = np.mean(episode_rewards)
         
-        # Logger les métriques
-        writer.add_scalar('Reward/Episode', episode_reward, episode)
-        writer.add_scalar('Reward/Moving_Average', moving_avg_reward, episode)
-        writer.add_scalar('Length/Episode', episode_length, episode)
-        writer.add_scalar('Q_Value/Mean', np.mean(episode_q_values), episode)
-        writer.add_scalar('Q_Value/Max', np.max(episode_q_values), episode)
-        writer.add_scalar('Exploration/Epsilon', agent.epsilon, episode)
+        # Logger les métriques si pas en mode visualisation
+        if writer:
+            writer.add_scalar('Reward/Episode', episode_reward, episode)
+            writer.add_scalar('Reward/Moving_Average', moving_avg_reward, episode)
+            writer.add_scalar('Length/Episode', episode_length, episode)
+            writer.add_scalar('Q_Value/Mean', np.mean(episode_q_values), episode)
+            writer.add_scalar('Q_Value/Max', np.max(episode_q_values), episode)
+            writer.add_scalar('Exploration/Epsilon', agent.epsilon, episode)
 
         print(f"Episode {episode}/{EPISODES} - Length: {episode_length} - "
               f"Reward: {episode_reward:.2f} - Avg Reward: {moving_avg_reward:.2f} - "

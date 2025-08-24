@@ -1,2 +1,6 @@
 pygame
 torch
+numpy
+tensorboard
+tqdm
+pygame

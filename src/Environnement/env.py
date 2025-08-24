@@ -34,6 +34,13 @@ class PongEnv:
         self.score = 0
         self.done = False
 
+    def render(self):
+        # Affiche la fenêtre pygame si tu as déjà un affichage
+        # Sinon, ajoute ici le code pour dessiner l'état du jeu
+        if hasattr(self, 'screen'):
+            import pygame
+            pygame.display.flip()
+            
     def reset(self):
         # Reset paddle and ball positions
         self.paddle_pos = np.array([50, self.WINDOW_HEIGHT/2])
